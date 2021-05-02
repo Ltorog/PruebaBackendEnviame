@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  postgres:
+    container_name: Postgres
+    build:
+      context: .
+      dockerfile: Dockerfile-Postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=docker
+      - POSTGRES_USER=docker
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    env_file:
+      - .env
+    volumes: 
+      - ./postgres-data:/var/lib/postgresql/data
+      # copy the sql script to create tables
+      - ./init_database.sql:/docker-entrypoint-initdb.d/init_database.sql
+  redis:
+    container_name: Redis
+    image: redis
+    command: --port 6379
+    ports:
+      - "6379:6379"
+    expose: 
+      - "6379"
+  apiweb:
+    build:
+      context: .
+      dockerfile: Dockerfile-Node
+    container_name: ${DOCKER_SERVICE_NAME}
+    volumes:        
+      - ./src:/src
+    ports:
+      - "${DOCKER_PORT}:3000"
