@@ -257,9 +257,7 @@ const guardarDelivery = async (req, res) => {
                 JSON.stringify(response.links)
             ];
 
-            await client.query(sql, values, (err, info) => {
-                console.log(err);
-            });
+            await client.query(sql, values);
 
             return res.status(201).send({ message: "Datos guardados exitosamente", data: response});
         }
@@ -271,7 +269,7 @@ const guardarDelivery = async (req, res) => {
     catch (e) {
         logger.error('Error al guardar el delivery');
         logger.error(e);
-        return res.status(500).send({ mensaje: "Error al guardar delivery", errors: e })
+        return res.status(500).send({ mensaje: "Error al guardar delivery", errors: e.detail })
     }
     finally {
         client.end();
@@ -324,17 +322,17 @@ const divisorMilFibonnaci = async (req, res) => {
     let cantidadDivisores = [];
     let numeroFibonnaci = 1;
 
-    const cantidadDivisoresFinal = 200;
+    const cantidadDivisoresFinal = 1000;
 
     const primos = await obtenerPrimos();
 
     while (cantidadDivisores.length < cantidadDivisoresFinal) {
         console.log("Serie fibonnaci: " + serieFibonnaci);
 
-        numeroFibonnaci = await fibonnaci(serieFibonnaci);
+        numeroFibonnaci = Number(await fibonnaci(Number(serieFibonnaci)));
         cantidadDivisores = await divisoresNumero(numeroFibonnaci, primos);
 
-        console.log("   Numero de la serie: " + numeroFibonnaci); 
+        console.log("   Numero de la serie: " + Number(numeroFibonnaci)); 
         console.log("   Cantidad divisores: " + cantidadDivisores.length); 
         serieFibonnaci++;
     }
@@ -379,13 +377,15 @@ const divisoresNumero = async (numero, primos) => {
     }
 
     primos.forEach(primo => {
-        if (numero % primo == 0) {
-            divisores.push(primo);
+        let primoToBigInt = Number(primo);
 
-            let exponentesNumeroPrimo = parseInt(Math.round(log(primo, numero)));
+        if (numero % primoToBigInt == 0) {
+            divisores.push(primoToBigInt);
 
-            for (let i = 2 ; i < exponentesNumeroPrimo / 2 ; i++) {
-                let secuenciaPrimo = Math.pow(primo, i);
+            let exponentesNumeroPrimo = Number(Math.round(log(primoToBigInt, numero)));
+
+            for (let i = 2 ; Number(i) < exponentesNumeroPrimo / 2 ; i++) {
+                let secuenciaPrimo = Number(Math.pow(primo, i));
                 if (numero % secuenciaPrimo == 0) {
                     divisores.push(secuenciaPrimo);
                 }
@@ -400,28 +400,29 @@ const divisoresNumero = async (numero, primos) => {
 }
 
 function log(x, y) {
-    return Math.log(y) / Math.log(x);
+    return Math.log(Number(y)) / Math.log(Number(x));
   }
 
 const fibonnaci = async (num) => {
+
     const keySerieFibonnaci = "serie_" + num;
 
     const getKey = await getAsync(keySerieFibonnaci);
 
     if (getKey !== null && !isNaN(getKey)) {
-        return parseInt(getKey)
+        return Number(getKey)
     }
     else {
         if (num <= 1) {
-            return parseInt(await getAsync("serie_1"));
+            return Number(await getAsync("serie_1"));
         }
             
-        const result = ((parseInt(await getAsync("serie_" + (num - 1))) + parseInt(await getAsync("serie_" + (num - 2))))); 
+        const result = Number(await getAsync("serie_" + (num - 1))) + Number(await getAsync("serie_" + (num - 2))); 
 
         if (!isNaN(result))
-            await setAsync(keySerieFibonnaci, result);
+            await setAsync(keySerieFibonnaci, Number(result));
 
-        return result
+        return Number(result)
     }
 }
 
@@ -484,7 +485,7 @@ const tiempoDeEnvioFake = async (req, res) => {
         totalEnviosFake.forEach(envio => {
             const dias = calcularTiempoEnvio(envio.distance);
 
-            let mensaje = "El envio desde " + input.from + " hasta " + input.to + " llega ";
+            let mensaje = "El envio desde " + envio.from + " hasta " + envio.to + " llega ";
 
             console.log("Dias " + dias);
             switch (dias) {

@@ -89,7 +89,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:3000/api/v1/eliminarempresas?id=5",
+							"raw": "localhost:3000/api/v1/eliminarempresas?id=4",
 							"host": [
 								"localhost"
 							],
@@ -102,7 +102,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "5"
+									"value": "4"
 								}
 							]
 						}
@@ -263,7 +263,28 @@
 		},
 		{
 			"name": "PALINDROMO",
-			"item": []
+			"item": [
+				{
+					"name": "CONTAR PALINDROMOS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/contarPalindromos",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"contarPalindromos"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "ACTUALIZAR SUELDOS",
