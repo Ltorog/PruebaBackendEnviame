@@ -279,8 +279,44 @@ const guardarDelivery = async (req, res) => {
     }
 }
 
+const contarPalindromos = async (req, res) => {
+    try {
+        let frase = "afoolishconsistencyisthehobgoblinoflittlemindsadoredbylittlestatesmenandphilosophersanddivineswithconsistencyagreatsoulhassimplynothingtodohemayaswellconcernhimselfwithhisshadowonthewallspeakwhatyouthinknowinhardwordsandtomorrowspeakwhattomorrowthinksinhardwordsagainthoughitcontradicteverythingyousaidtodayahsoyoushallbesuretobemisunderstoodisitsobadthentobemisunderstoodpythagoraswasmisunderstoodandsocratesandjesusandlutherandcopernicusandgalileoandnewtonandeverypureandwisespiritthatevertookfleshtobegreatistobemisunderstood"
+        let palindromos = [];
+
+        for (let i = 0; i < frase.length; i++)
+        {
+            for (let j = frase.length ; j > i ; j--) {
+                let fraseParcial = frase.substring(i, j);
+                console.log(fraseParcial);
+
+                if (fraseParcial.length > 1 && esPalindromo(fraseParcial))
+                {
+                    palindromos.push(fraseParcial);
+                }
+            }
+        }
+
+        return res.status(200).send({ mensaje: "Cantidad de palindromos encontrados: " + palindromos.length, data: palindromos });
+    }
+    catch (e) {
+        console.error(e);
+        return res.status(500).send({ mensaje: "Error al contar palindromos" });
+    }
+}
+
+const esPalindromo = (frase) => {
+  var re = /[\W_]/g;
+  
+  var lowRegStr = frase.toLowerCase().replace(re, '');
+  var reverseStr = lowRegStr.split('').reverse().join(''); 
+
+  return reverseStr === lowRegStr;
+}
+
 const divisorMilFibonnaci = async (req, res) => {
-console.log("Entrando al metodo");
+    await setAsync("serie_1", 1);
+    await setAsync("serie_2", 2);
 
     let serieFibonnaci = 1;
     let cantidadDivisores = 0;
@@ -290,8 +326,7 @@ console.log("Entrando al metodo");
         numeroFibonnaci = await fibonnaci(serieFibonnaci);
         cantidadDivisores = await divisoresNumero(numeroFibonnaci);
 
-        console.log("Numero: ", numeroFibonnaci);
-        console.log("Divisores: ", cantidadDivisores);
+        console.log("Serie fibonnaci: " + serieFibonnaci);
 
         serieFibonnaci++;
     }
@@ -310,7 +345,7 @@ const divisoresNumero = async (numero) => {
     else {
         let cantidadDivisores = 1;
 
-        for (let i = 1 ; i < numero ; i++) {
+        for (let i = 1 ; i < numero/2 ; i++) {
             if (numero % i == 0) {
                 cantidadDivisores++;
             }
@@ -333,13 +368,12 @@ const fibonnaci = async (num) => {
     }
     else {
         if (num <= 1) {
-            return 1;
+            return await parseInt(getAsync("serie_1"));
         }
             
-        const result = ((await fibonnaci(num - 1)) + (await fibonnaci(num - 2))); 
+        const result = ((parseInt(await getAsync("serie_" + num - 1)) + parseInt(await getAsync("serie_" + num - 2)))); 
 
         await setAsync(keySerieFibonnaci, result);
-        await expireAsync(keySerieFibonnaci, 6000);
 
         return result
     }
@@ -350,7 +384,7 @@ const tiempoDeEnvio = async (req, res) => {
         let input = req.query;
         let errors = validateInputEnvios(input);
 
-        if (input != undefined ? errors.length > 0 : false) {
+        if (input != undefined ? errors.length > 0 : true) {
             return res.status(423).send({ mensaje: "Se deben ingresar parametros", errors: errors });
         }
 
@@ -376,6 +410,58 @@ const tiempoDeEnvio = async (req, res) => {
     }
     catch(e){
         logger.error(e);
+        return res.status(500).send({ mensaje: "Error al calcular distancia" })
+    }
+}
+
+
+const tiempoDeEnvioFake = async (req, res) => {
+    try {
+        let input = req.query;
+
+        if (input != undefined ? (input.cantidad == undefined || typeof input.cantidad != 'number' && input.cantidad == 0) : true) {
+            return res.status(423).send({ mensaje: "Se deben ingresar parametros", errors: ["debe ingresar cantidad en params"] });
+        }
+
+        const totalEnviosFake = [];
+
+        for (let i = 1 ; i <= input.cantidad ; i++) {
+            const datosEnvio = {
+                id: i,
+                from: faker.address.cityName(),
+                to: faker.address.cityName(),
+                distance: parseInt(Math.random() * (2000))
+            }
+
+            totalEnviosFake.push(datosEnvio);
+        }
+
+        totalEnviosFake.forEach(envio => {
+            const dias = calcularTiempoEnvio(envio.distance);
+
+            let mensaje = "El envio desde " + input.from + " hasta " + input.to + " llega ";
+
+            console.log("Dias " + dias);
+            switch (dias) {
+                case 0:
+                    mensaje += "el mismo dia";
+                    break;
+                case 1:
+                    mensaje += "en " + dias + " dia";
+                    break;
+                default:
+                    mensaje += "en " + dias + " dias";
+                    break;
+            }
+
+            envio.mensaje = mensaje;
+        })
+
+        return res.status(200).send({ mensaje: totalEnviosFake});
+
+    }
+    catch(e) {
+        console.error(e);
         return res.status(500).send({ mensaje: "Error al calcular distancia" })
     }
 }
@@ -410,6 +496,39 @@ const validateInputEnvios = (input) => {
 
     return errors;
 } 
+
+
+const actualizarSueldoEmpleados = async (req, res) => {
+    const client = await conexionDb();
+
+    try {
+
+        const sql = `drop table if exists continents_ajuste;
+
+        select co.id, ((100::DECIMAL + co.anual_adjustment)/100::DECIMAL) as ajuste
+        into temp table continents_ajuste
+        from continents co;
+        
+        update employees
+        set 
+            salary = salary::DECIMAL * ca.ajuste
+        from countries c
+        inner join continents_ajuste ca on c.continent_id = ca.id
+        where salary <= 5000 and c.id  = country_id;`
+
+        await client.query(sql);
+
+        return res.status(200).send({ mensaje: "Se ha actualizado los salarios segun reajuste" })
+    }
+    catch(e) {
+        logger.error("Error al intentar actualizar");
+        logger.error(e);
+        return res.status(500).send({ mensaje: "Error al actualizar" });
+    }
+    finally {
+        client.end();
+    }
+}
 
 const validateInput = async (input, necesitaId) => {
     const errors = [];
@@ -452,5 +571,8 @@ module.exports = {
     actualizarEmpresas,
     guardarDelivery,
     divisorMilFibonnaci,
-    tiempoDeEnvio
+    tiempoDeEnvio,
+    actualizarSueldoEmpleados,
+    tiempoDeEnvioFake,
+    contarPalindromos
 }

@@ -10,17 +10,24 @@ const {
     actualizarEmpresas,
     guardarDelivery,
     divisorMilFibonnaci,
-    tiempoDeEnvio } = require('../controllers/home'); 
+    tiempoDeEnvio,
+    actualizarSueldoEmpleados,
+    tiempoDeEnvioFake,
+    contarPalindromos } = require('../controllers/home'); 
 
+const inicioRuta = '/api/v1/';
 
-//Generacion de datos Fake
-router.get('/api/v1/' + generarFake.name, generarFake);
-router.post('/api/v1/' + generarEmpresa.name, generarEmpresa);
-router.get('/api/v1/' + obtenerEmpresas.name, obtenerEmpresas);
-router.delete('/api/v1/' + eliminarEmpresas.name, eliminarEmpresas);
-router.put('/api/v1/' + actualizarEmpresas.name, actualizarEmpresas);
-router.post('/api/v1/' + guardarDelivery.name, guardarDelivery);
-router.get('/api/v1/' + divisorMilFibonnaci.name, divisorMilFibonnaci);
-router.get('/api/v1/' + tiempoDeEnvio.name, tiempoDeEnvio);
+// Rutas al metodo del controlador
+router.get(inicioRuta + generarFake.name, generarFake);
+router.post(inicioRuta + generarEmpresa.name, generarEmpresa);
+router.get(inicioRuta + obtenerEmpresas.name, obtenerEmpresas);
+router.delete(inicioRuta + eliminarEmpresas.name, eliminarEmpresas);
+router.put(inicioRuta + actualizarEmpresas.name, actualizarEmpresas);
+router.post(inicioRuta + guardarDelivery.name, guardarDelivery);
+router.get(inicioRuta + divisorMilFibonnaci.name, divisorMilFibonnaci);
+router.get(inicioRuta + tiempoDeEnvio.name, tiempoDeEnvio);
+router.get(inicioRuta + actualizarSueldoEmpleados.name, actualizarSueldoEmpleados);
+router.get(inicioRuta + tiempoDeEnvioFake.name, tiempoDeEnvioFake);
+router.get(inicioRuta + contarPalindromos.name, contarPalindromos);
 
 module.exports = router;
