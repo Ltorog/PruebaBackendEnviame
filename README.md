@@ -1,4 +1,4 @@
-#Prueba Backend Enviame
+# Prueba Backend Enviame
 
 El proyecto esta realizado completamente en una API con NodeJS + Express, montado en una BD Postgres y apoyado por Redis, para lograr una optimizacion de algunos procesos. Siendo ya dichas las caracteristicas principales, cabe destacar que se encuentra todo dockerizado.
 
