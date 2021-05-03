@@ -25,6 +25,14 @@ services:
       - "6379:6379"
     expose: 
       - "6379"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 3096M
+        reservations:
+          cpus: '0.5'
+          memory: 100M
   apiweb:
     build:
       context: .

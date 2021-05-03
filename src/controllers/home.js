@@ -92,7 +92,6 @@ const obtenerEmpresas = async (req, res) => {
     }
 }
 
-
 const eliminarEmpresas = async (req, res) => {
     const client = await conexionDb();
 
@@ -317,63 +316,110 @@ const esPalindromo = (frase) => {
 const divisorMilFibonnaci = async (req, res) => {
     await setAsync("serie_1", 1);
     await setAsync("serie_2", 2);
+    await setAsync("serie_3", 3);
+    await setAsync("serie_4", 5);
+    await setAsync("serie_5", 8);
 
     let serieFibonnaci = 1;
-    let cantidadDivisores = 0;
+    let cantidadDivisores = [];
     let numeroFibonnaci = 1;
 
-    while (cantidadDivisores < 1000) {
-        numeroFibonnaci = await fibonnaci(serieFibonnaci);
-        cantidadDivisores = await divisoresNumero(numeroFibonnaci);
+    const cantidadDivisoresFinal = 200;
 
+    const primos = await obtenerPrimos();
+
+    while (cantidadDivisores.length < cantidadDivisoresFinal) {
         console.log("Serie fibonnaci: " + serieFibonnaci);
 
+        numeroFibonnaci = await fibonnaci(serieFibonnaci);
+        cantidadDivisores = await divisoresNumero(numeroFibonnaci, primos);
+
+        console.log("   Numero de la serie: " + numeroFibonnaci); 
+        console.log("   Cantidad divisores: " + cantidadDivisores.length); 
         serieFibonnaci++;
     }
 
-    return res.status(200).send({ mensaje: "El numero con al menos mil divisores es: " + numeroFibonnaci});
+    return res.status(200).send({ mensaje: "El primer numero con mas de " + cantidadDivisoresFinal + " divisores es: " + numeroFibonnaci});
 }
 
-const divisoresNumero = async (numero) => {
-    const keyDivisoresNumero = "divisores_" + numero;
+const obtenerPrimos = async () => {
+    const MAX_SIZE = 1000005;
+    const primos = [];
 
-    const getKey = await getAsync(keyDivisoresNumero);
+    var esPrimo = Array(MAX_SIZE).fill(true);
 
-    if (getKey !== null) {
-        return parseInt(getKey)
+    let p, i;
+
+    for (p = 2; p * p < MAX_SIZE; p++) {
+        if (esPrimo[p] == true) {
+            for (i = p * p; i < MAX_SIZE; i += p) {
+                esPrimo[i] = false;
+            }
+
+        }
     }
-    else {
-        let cantidadDivisores = 1;
 
-        for (let i = 1 ; i < numero/2 ; i++) {
-            if (numero % i == 0) {
-                cantidadDivisores++;
+    for (p = 2; p < MAX_SIZE; p++){
+        if (esPrimo[p]) {
+            primos.push(p);
+        }
+    }
+
+    return primos;
+};
+
+const divisoresNumero = async (numero, primos) => {
+    if (numero == 0) {
+        return [];
+    }
+    let divisores = [1, numero]
+
+    if (primos.includes(numero)) {
+        divisores.pop(numero);
+    }
+
+    primos.forEach(primo => {
+        if (numero % primo == 0) {
+            divisores.push(primo);
+
+            let exponentesNumeroPrimo = parseInt(Math.round(log(primo, numero)));
+
+            for (let i = 2 ; i < exponentesNumeroPrimo / 2 ; i++) {
+                let secuenciaPrimo = Math.pow(primo, i);
+                if (numero % secuenciaPrimo == 0) {
+                    divisores.push(secuenciaPrimo);
+                }
             }
         }
+    });
 
-        await setAsync(keyDivisoresNumero, cantidadDivisores);
-        await expireAsync(keyDivisoresNumero, 6000);
-
-        return cantidadDivisores;
-    }
+    return divisores.filter(function(item, pos) {
+        return divisores.indexOf(item) == pos;
+    });
+    
 }
+
+function log(x, y) {
+    return Math.log(y) / Math.log(x);
+  }
 
 const fibonnaci = async (num) => {
     const keySerieFibonnaci = "serie_" + num;
 
     const getKey = await getAsync(keySerieFibonnaci);
 
-    if (getKey !== null) {
+    if (getKey !== null && !isNaN(getKey)) {
         return parseInt(getKey)
     }
     else {
         if (num <= 1) {
-            return await parseInt(getAsync("serie_1"));
+            return parseInt(await getAsync("serie_1"));
         }
             
-        const result = ((parseInt(await getAsync("serie_" + num - 1)) + parseInt(await getAsync("serie_" + num - 2)))); 
+        const result = ((parseInt(await getAsync("serie_" + (num - 1))) + parseInt(await getAsync("serie_" + (num - 2))))); 
 
-        await setAsync(keySerieFibonnaci, result);
+        if (!isNaN(result))
+            await setAsync(keySerieFibonnaci, result);
 
         return result
     }
@@ -413,7 +459,6 @@ const tiempoDeEnvio = async (req, res) => {
         return res.status(500).send({ mensaje: "Error al calcular distancia" })
     }
 }
-
 
 const tiempoDeEnvioFake = async (req, res) => {
     try {
@@ -496,7 +541,6 @@ const validateInputEnvios = (input) => {
 
     return errors;
 } 
-
 
 const actualizarSueldoEmpleados = async (req, res) => {
     const client = await conexionDb();
