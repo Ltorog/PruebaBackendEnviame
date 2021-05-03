@@ -9,6 +9,7 @@ const myWinstonOptions = {
     transports: [consoleTransport]
 }
 const inputConexion = require('../../credentials.json');
+const { exception } = require('console');
 
 
 const REDISHOST = 'redis';
@@ -312,32 +313,43 @@ const esPalindromo = (frase) => {
 }
 
 const divisorMilFibonnaci = async (req, res) => {
-    await setAsync("serie_1", 1);
-    await setAsync("serie_2", 2);
-    await setAsync("serie_3", 3);
-    await setAsync("serie_4", 5);
-    await setAsync("serie_5", 8);
+    try {
+        await setAsync("serie_1", 1);
+        await setAsync("serie_2", 2);
+        await setAsync("serie_3", 3);
+        await setAsync("serie_4", 5);
+        await setAsync("serie_5", 8);
 
-    let serieFibonnaci = 1;
-    let cantidadDivisores = [];
-    let numeroFibonnaci = 1;
+        let serieFibonnaci = 1;
+        let cantidadDivisores = [];
+        let numeroFibonnaci = 1;
 
-    const cantidadDivisoresFinal = 1000;
+        const cantidadDivisoresFinal = 1000;
 
-    const primos = await obtenerPrimos();
+        const primos = await obtenerPrimos();
 
-    while (cantidadDivisores.length < cantidadDivisoresFinal) {
-        console.log("Serie fibonnaci: " + serieFibonnaci);
+        while (cantidadDivisores.length < cantidadDivisoresFinal) {
+            console.log("Serie fibonnaci: " + serieFibonnaci);
 
-        numeroFibonnaci = Number(await fibonnaci(Number(serieFibonnaci)));
-        cantidadDivisores = await divisoresNumero(numeroFibonnaci, primos);
+            numeroFibonnaci = Number(await fibonnaci(Number(serieFibonnaci)));
 
-        console.log("   Numero de la serie: " + Number(numeroFibonnaci)); 
-        console.log("   Cantidad divisores: " + cantidadDivisores.length); 
-        serieFibonnaci++;
+            if (typeof numeroFibonnaci !== 'number') {
+                return res.status(500).send({ mensaje: "Error, desborde matematico" });
+            }
+
+            cantidadDivisores = await divisoresNumero(numeroFibonnaci, primos);
+
+            console.log("   Numero de la serie: " + Number(numeroFibonnaci)); 
+            console.log("   Cantidad divisores: " + cantidadDivisores.length); 
+            serieFibonnaci++;
+        }
+
+        return res.status(200).send({ mensaje: "El primer numero con mas de " + cantidadDivisoresFinal + " divisores es: " + numeroFibonnaci});
     }
-
-    return res.status(200).send({ mensaje: "El primer numero con mas de " + cantidadDivisoresFinal + " divisores es: " + numeroFibonnaci});
+    catch(e) {
+        console.error(e);
+        return res.status(500).send({ mensaje: "Error al buscar divisor" });
+    }
 }
 
 const obtenerPrimos = async () => {
