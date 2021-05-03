@@ -1,0 +1,294 @@
+{
+	"info": {
+		"_postman_id": "c492418e-8c49-47b7-ae33-508f9abd92ab",
+		"name": "Prueba Enviame - Toro Gomez Luis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API REST + CRUD",
+			"item": [
+				{
+					"name": "Crear Empresa",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Luis Eduardo\",\r\n    \"city\": \"Santiago\",\r\n    \"number\": \"+569 9877 4947\",\r\n    \"email\": \"luis.torog@utem.cl\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/v1/generarEmpresa",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"generarEmpresa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generar Datos Fake",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/generarfake",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"generarfake"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Empresas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/obtenerempresas?id=4",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"obtenerempresas"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Empresa",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/eliminarempresas?id=5",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"eliminarempresas"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Empresa",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Prueba de actualizacion\",\r\n    \"number\": \"+569 98774947\",\r\n    \"city\": \"Santiago de Chile\",\r\n    \"email\": \"luis.torog@utem.cl\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/v1/actualizarempresas?id=4",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"actualizarempresas"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CONSUMIR API",
+			"item": [
+				{
+					"name": "Guardar Delivery",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/guardarDelivery",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"guardarDelivery"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FIBONNACI 1000 DIVISORES",
+			"item": [
+				{
+					"name": "Obtener divisores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/divisorMilFibonnaci",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"divisorMilFibonnaci"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CALCULAR DISTANCIA",
+			"item": [
+				{
+					"name": "CALCULAR DISTANCIA",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/tiempoDeEnvio?from=santiago&to=temuco&distance=600",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"tiempoDeEnvio"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "santiago"
+								},
+								{
+									"key": "to",
+									"value": "temuco"
+								},
+								{
+									"key": "distance",
+									"value": "600"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CALCULAR DISTANCIA DATOS FAKE",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/tiempoDeEnvioFake?cantidad=20",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"tiempoDeEnvioFake"
+							],
+							"query": [
+								{
+									"key": "cantidad",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PALINDROMO",
+			"item": []
+		},
+		{
+			"name": "ACTUALIZAR SUELDOS",
+			"item": [
+				{
+					"name": "ACTUALIZAR SUELDOS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3000/api/v1/actualizarSueldoEmpleados",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"actualizarSueldoEmpleados"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
